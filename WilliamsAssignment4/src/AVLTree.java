@@ -1,6 +1,4 @@
-import java.util.LinkedList;
 import java.util.Stack;
-import java.math.*;
 public class AVLTree {
 
     private AVLTreeNode root;
@@ -189,7 +187,82 @@ public class AVLTree {
 
     }
 
-    public void
+
+    public void search(String targetKey) {
+        AVLTreeNode currentNode = root;
+        String nodeKey = null;
+        while(currentNode != null){
+
+        nodeKey = currentNode.getData().keySet().iterator().next();
+        
+        if (targetKey.compareTo(nodeKey) == 0){
+            System.out.print("Found key: " + nodeKey + " with value: " + currentNode.getData().get(nodeKey));
+            return;
+        }
+
+        else if (targetKey.compareTo(nodeKey) > 0){
+            currentNode = currentNode.getRightNode();
+            System.out.println("Going right");
+        }
+
+        else if (targetKey.compareTo(nodeKey) < 0){
+            currentNode = currentNode.getLeftNode();
+            System.out.println("Going left");
+        }
+
+        else{
+            System.out.println("Key not found");
+            return;
+        }
+
+
+    }
+    }
+
+
+    public void deletion(String target){
+
+        Stack<AVLTreeNode> visitedNodes = new Stack<>();
+        AVLTreeNode currentNode = root;
+        String nodeKey = null;
+
+        while (currentNode != null) {
+            nodeKey = currentNode.getData().keySet().iterator().next();
+            visitedNodes.push(currentNode);
+            AVLTreeNode parentNode = root;
+
+            int loopnum = 0;
+
+            
+        
+            if (target.compareTo(nodeKey) == 0) {
+                //TODO: ADD DELETION LOGIC HERE
+                
+        }
+
+            else if (target.compareTo(nodeKey) > 0){
+            parentNode = currentNode;
+            currentNode = currentNode.getRightNode();
+            System.out.println("Going right");
+            loopnum++;
+        }
+
+            else if (target.compareTo(nodeKey) < 0){
+            parentNode = currentNode;
+            currentNode = currentNode.getLeftNode();
+            System.out.println("Going left");
+            loopnum++;
+        }
+
+        
+            else{
+            System.out.println("Deletion target not found");
+            return;
+        }
+
+    }
+}
+    
 
     public AVLTreeNode RRotation(AVLTreeNode node){
 

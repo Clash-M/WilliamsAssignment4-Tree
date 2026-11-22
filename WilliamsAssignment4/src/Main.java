@@ -30,4 +30,8 @@ void main() {
             sides.push("left");
         }
     }
+
+
+    tree.search("10");
+
 }
