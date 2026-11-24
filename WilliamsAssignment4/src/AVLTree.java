@@ -552,7 +552,7 @@ public class AVLTree {
         printInOrder(node.getRightNode());
     }
 
-    public void printPreOrder(AVLTreeNode node){
+    public void printPostOrder(AVLTreeNode node){
         Stack<AVLTreeNode> stackONodes = new Stack<>();
 
         if(node == null){
@@ -561,8 +561,8 @@ public class AVLTree {
 
         stackONodes.push(node);
         
-        printPreOrder(node.getLeftNode());
-        printPreOrder(node.getRightNode());
+        printPostOrder(node.getLeftNode());
+        printPostOrder(node.getRightNode());
 
         for (AVLTreeNode nodesInStack : stackONodes) {
             System.out.println("Word: " + nodesInStack.getData() + " Height: " + nodesInStack.getHeight());

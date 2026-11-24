@@ -27,9 +27,31 @@ void main() {
 
         System.out.println();
         System.out.println();
-        System.out.println("PRE-ORDER PRINT");
-        tree.printPreOrder(rootOTree);
+        System.out.println("POST-ORDER PRINT");
+        tree.printPostOrder(rootOTree);
 
+
+        do {
+            System.out.print("Would you like to insert or delete a word? (i/d): ");
+            userInput = scnr.nextLine();
+            if(userInput.equalsIgnoreCase("i")){
+                System.out.print("Enter word to insert: ");
+                userInput = scnr.nextLine();
+                tree.insert(userInput.toLowerCase().strip());
+                System.out.println("Word inserted.");
+            } else if (userInput.equalsIgnoreCase("d")){
+                System.out.print("Enter word to delete: ");
+                userInput = scnr.nextLine();
+                tree.deletion(userInput.toLowerCase().strip());
+                System.out.println("Word deleted.");
+            } else {
+                System.out.println("Invalid input. Please enter 'i' or 'd'.");
+            }
+        } while (userInput.equalsIgnoreCase("exit"));
+
+        System.out.println();
+        System.out.println();
+        
 
          userInput = scnr.nextLine();
          
