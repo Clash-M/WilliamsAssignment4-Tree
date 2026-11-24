@@ -1,37 +1,40 @@
-import java.util.Stack;
+import java.util.ArrayList;
+import java.util.Scanner;
 void main() {
     AVLTree tree = new AVLTree();
+    ArrayList <String> listOLines = new ArrayList<>();
+    Scanner scnr = new Scanner(System.in);
+    String userInput;
+    
+    
+    System.out.print("Enter file name: ");
+     userInput = scnr.nextLine();
+    do {
+         
 
-    tree.insert("30");
-    tree.insert("30");
-    tree.insert("20");
-    tree.insert("10");
-    String lastInsertedKey = "5";
-    tree.insert(lastInsertedKey);
+         listOLines = ReadAndMakeList.readFile(userInput);
 
-    Stack<AVLTreeNode> nodes = new Stack<>();
-    Stack<String> sides = new Stack<>();
-    if (tree.getRoot() != null) {
-        nodes.push(tree.getRoot());
-        sides.push("root");
-    }
-
-    while (!nodes.isEmpty()) {
-        AVLTreeNode node = nodes.pop();
-        String side = sides.pop();
-        System.out.println("Side: " + side + ", data: " + node.getData()
-                + ", height: " + node.getHeight());
-        if (node.getRightNode() != null) {
-            nodes.push(node.getRightNode());
-            sides.push("right");
+        for (String line : listOLines) {
+            String[] words = line.trim().split("[\\s,.!?]+");
+            for (String word : words) {
+                tree.insert(word.toLowerCase().strip());
+            }
         }
-        if (node.getLeftNode() != null) {
-            nodes.push(node.getLeftNode());
-            sides.push("left");
-        }
-    }
+
+        AVLTreeNode rootOTree = tree.getRoot();
+        System.out.println("IN-ORDER PRINT ALPHABETICAL");
+        tree.printInOrder(rootOTree);
+
+        System.out.println();
+        System.out.println();
+        System.out.println("PRE-ORDER PRINT");
+        tree.printPreOrder(rootOTree);
 
 
-    tree.search("10");
+         userInput = scnr.nextLine();
+         
+    } while (!userInput.equalsIgnoreCase("n"));
+    
+    
 
 }

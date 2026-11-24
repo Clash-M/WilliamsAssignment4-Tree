@@ -225,33 +225,145 @@ public class AVLTree {
         Stack<AVLTreeNode> visitedNodes = new Stack<>();
         AVLTreeNode currentNode = root;
         String nodeKey = null;
+        AVLTreeNode parentNode = root;
+        boolean deleted = false;
+
 
         while (currentNode != null) {
             nodeKey = currentNode.getData().keySet().iterator().next();
             visitedNodes.push(currentNode);
-            AVLTreeNode parentNode = root;
+            
 
-            int loopnum = 0;
+            
 
             
         
             if (target.compareTo(nodeKey) == 0) {
-                //TODO: ADD DELETION LOGIC HERE
                 
+
+                if (root.getData().containsKey(target)) {
+                    //root no kids
+                    if(root.getLeftNode() == null && root.getRightNode() == null){
+                        root = null;
+                        return;
+                    }
+
+                    //root one kid
+                    else if(root.getLeftNode() != null && root.getRightNode() == null){
+                        root = root.getLeftNode();
+                        deleted = true;
+                        break;
+                    }
+
+                    else if(root.getLeftNode() == null && root.getRightNode() != null){
+                        root = root.getRightNode();
+                        deleted = true;
+                        break;
+                    }
+                    //root has two kids
+                    else{
+
+                        // TODO: FIX IF ROOT HAS TWO KIDSSS
+
+                    AVLTreeNode successor = findMin(root.getRightNode());
+
+                    root.setData(successor.getData());
+
+                    if(successor.getRightNode() != null && successor.getLeftNode() == null){
+                        root.setRightNode(successor.getRightNode());
+                        deleted = true;
+                        break;
+                    }
+
+                    else{
+                        AVLTreeNode parentOfsuc = findMinParent(root);
+                        parentOfsuc.setLeftNode(null);
+                        deleted = true;
+                        break;
+                    }
+
+                    }
+                    
+                }
+
+                //If deleted node has no children
+                if(currentNode.getLeftNode() == null && currentNode.getRightNode() == null){
+                    //Child was left node
+                    if (parentNode.getLeftNode() == currentNode) {
+                        parentNode.setLeftNode(null);
+                        deleted = true;
+                        break;
+                    }
+                    //Child was right node
+                    else if(parentNode.getRightNode() == currentNode){
+                        parentNode.setRightNode(null);
+                        deleted = true;
+                        break;
+                    }
+                }
+
+                //If deleted node has one child
+
+                else if (currentNode.getLeftNode() != null && currentNode.getRightNode() == null) {
+                    if(parentNode.getLeftNode() == currentNode){
+                    parentNode.setLeftNode(currentNode.getLeftNode());
+                        deleted = true;
+                        break;
+                    }
+
+                    else{
+                        parentNode.setRightNode(currentNode.getLeftNode());
+                        deleted = true;
+                        break;
+                    }
+                }
+
+                else if(currentNode.getRightNode() != null && currentNode.getLeftNode() == null ){
+                    if(parentNode.getRightNode() == currentNode){
+                    parentNode.setRightNode(currentNode.getRightNode());
+                    deleted = true;
+                    break;
+                    }
+                    else{
+                        parentNode.setLeftNode(currentNode.getRightNode());
+                        deleted = true;
+                        break;
+                    }
+                }
+
+                else{
+                    AVLTreeNode successor = findMin(currentNode.getRightNode());
+                    AVLTreeNode successorParent = findMinParent(currentNode.getRightNode());
+                    currentNode.setData(successor.getData());
+                    if (successor.getRightNode() != null) {
+                        successorParent.setLeftNode(successor.getRightNode());
+                        deleted = true;
+                        break;
+                    }
+
+                    else{
+                        successorParent.setLeftNode(null);
+                        deleted = true;
+                        break;
+                    }
+
+                    
+                }
+
         }
 
             else if (target.compareTo(nodeKey) > 0){
             parentNode = currentNode;
             currentNode = currentNode.getRightNode();
             System.out.println("Going right");
-            loopnum++;
+            
         }
 
             else if (target.compareTo(nodeKey) < 0){
             parentNode = currentNode;
             currentNode = currentNode.getLeftNode();
             System.out.println("Going left");
-            loopnum++;
+            
         }
 
         
@@ -261,6 +373,105 @@ public class AVLTree {
         }
 
     }
+
+    while (!(visitedNodes.isEmpty())) {
+
+                AVLTreeNode currentNodeVisited = visitedNodes.pop();
+                System.out.println(currentNodeVisited.getData());
+
+
+                updateHeight(currentNodeVisited);
+                AVLTreeNode left = currentNodeVisited.getLeftNode();
+                AVLTreeNode right = currentNodeVisited.getRightNode();
+
+                System.out.println("Node: " + target);
+                System.out.println("Height: " + currentNodeVisited.getHeight());
+
+
+                int bf = height(left) - height(right);
+                System.out.println("BF: " + bf);
+                if (bf > 1) {
+                    int leftBf = height(left.getLeftNode()) - height(left.getRightNode());
+
+                    //LL case
+                    if (leftBf >= 0) {
+                        System.out.println("LL");
+                        AVLTreeNode newRoot = RRotation(currentNodeVisited);
+                        if (visitedNodes.isEmpty()) {
+                            root = newRoot;
+                        } else {
+                            AVLTreeNode parent = visitedNodes.peek();
+
+                            if (parent.getLeftNode() == currentNodeVisited) {
+                                parent.setLeftNode(newRoot);
+                            } else {
+                                parent.setRightNode(newRoot);
+                            }
+                        }
+                    }
+                    //LR case
+                    else if (leftBf < 0) {
+                        System.out.println("LR");
+                        currentNodeVisited.setLeftNode(LRotation(currentNodeVisited.getLeftNode()));
+                        AVLTreeNode newRoot = RRotation(currentNodeVisited);
+
+                        if (visitedNodes.isEmpty()) {
+                            root = newRoot;
+                        } else {
+                            AVLTreeNode parent = visitedNodes.peek();
+
+                            if (parent.getLeftNode() == currentNodeVisited) {
+                                parent.setLeftNode(newRoot);
+                            } else {
+                                parent.setRightNode(newRoot);
+                            }
+                        }
+
+                    }
+
+                }
+
+                if (bf < -1) {
+                    int rightBf = height(right.getLeftNode()) - height(right.getRightNode());
+                    //RR case
+                    if (rightBf <= 0) {
+                        System.out.println("RR");
+                        AVLTreeNode newRoot = LRotation(currentNodeVisited);
+                        if (visitedNodes.isEmpty()) {
+                            root = newRoot;
+                        } else {
+                            AVLTreeNode parent = visitedNodes.peek();
+
+                            if (parent.getLeftNode() == currentNodeVisited) {
+                                parent.setLeftNode(newRoot);
+                            } else {
+                                parent.setRightNode(newRoot);
+                            }
+                        }
+                    }
+                    //RL case
+                    else if (rightBf > 0) {
+                        System.out.println("RL");
+                        currentNodeVisited.setRightNode(RRotation(currentNodeVisited.getRightNode()));
+                        AVLTreeNode newRoot = LRotation(currentNodeVisited);
+
+                        if (visitedNodes.isEmpty()) {
+                            root = newRoot;
+                        } else {
+                            AVLTreeNode parent = visitedNodes.peek();
+
+                            if (parent.getLeftNode() == currentNodeVisited) {
+                                parent.setLeftNode(newRoot);
+                            } else {
+                                parent.setRightNode(newRoot);
+                            }
+                        }
+                    }
+
+                }
+
+            }
+    
 }
     
 
@@ -305,6 +516,60 @@ public class AVLTree {
     public void updateHeight(AVLTreeNode node){
         node.setHeight(Math.max(height(node.getLeftNode()), height(node.getRightNode())) + 1);
     }
+
+
+    public AVLTreeNode findMin(AVLTreeNode node){
+        AVLTreeNode currentNode = node;
+
+        while(currentNode.getLeftNode() != null) {
+            currentNode = currentNode.getLeftNode();
+        }
+
+        return currentNode;
+    }
+
+    public AVLTreeNode findMinParent(AVLTreeNode node){
+        AVLTreeNode currentNode = node;
+        
+        while(currentNode.getLeftNode().getLeftNode() != null) {
+            currentNode = currentNode.getLeftNode();
+        }
+
+        return currentNode;
+    }
+
+    public void printInOrder(AVLTreeNode node){
+        if (node == null){
+            return;
+        }
+
+        
+
+        printInOrder(node.getLeftNode());
+
+        System.out.println("Word: " + node.getData() + " Height: " + node.getHeight());
+
+        printInOrder(node.getRightNode());
+    }
+
+    public void printPreOrder(AVLTreeNode node){
+        Stack<AVLTreeNode> stackONodes = new Stack<>();
+
+        if(node == null){
+            return;
+        }
+
+        stackONodes.push(node);
+        
+        printPreOrder(node.getLeftNode());
+        printPreOrder(node.getRightNode());
+
+        for (AVLTreeNode nodesInStack : stackONodes) {
+            System.out.println("Word: " + nodesInStack.getData() + " Height: " + nodesInStack.getHeight());
+        }
+
+    }
+    
 
 
 }
