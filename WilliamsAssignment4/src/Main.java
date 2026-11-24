@@ -1,18 +1,18 @@
 import java.util.ArrayList;
 import java.util.Scanner;
-void main() {
-    AVLTree tree = new AVLTree();
-    ArrayList <String> listOLines = new ArrayList<>();
-    Scanner scnr = new Scanner(System.in);
-    String userInput;
-    
-    
-    System.out.print("Enter file name: ");
-     userInput = scnr.nextLine();
-    do {
-         
 
-         listOLines = ReadAndMakeList.readFile(userInput);
+public class Main {
+    public static void main(String[] args) {
+
+        ArrayList <String> listOLines = new ArrayList<>();
+        Scanner scnr = new Scanner(System.in);
+        String userInput;
+        AVLTree tree = new AVLTree();
+    
+    System.out.print("Enter file name (type 'n' to quit): ");
+     userInput = scnr.nextLine();
+
+     listOLines = ReadAndMakeList.readFile(userInput);
 
         for (String line : listOLines) {
             String[] words = line.trim().split("[\\s,.!?]+");
@@ -20,43 +20,61 @@ void main() {
                 tree.insert(word.toLowerCase().strip());
             }
         }
-
-        AVLTreeNode rootOTree = tree.getRoot();
-        System.out.println("IN-ORDER PRINT ALPHABETICAL");
-        tree.printInOrder(rootOTree);
-
-        System.out.println();
-        System.out.println();
-        System.out.println("POST-ORDER PRINT");
-        tree.printPostOrder(rootOTree);
-
-
-        do {
-            System.out.print("Would you like to insert or delete a word? (i/d): ");
-            userInput = scnr.nextLine();
-            if(userInput.equalsIgnoreCase("i")){
-                System.out.print("Enter word to insert: ");
-                userInput = scnr.nextLine();
-                tree.insert(userInput.toLowerCase().strip());
-                System.out.println("Word inserted.");
-            } else if (userInput.equalsIgnoreCase("d")){
-                System.out.print("Enter word to delete: ");
-                userInput = scnr.nextLine();
-                tree.deletion(userInput.toLowerCase().strip());
-                System.out.println("Word deleted.");
-            } else {
-                System.out.println("Invalid input. Please enter 'i' or 'd'.");
-            }
-        } while (userInput.equalsIgnoreCase("exit"));
-
-        System.out.println();
-        System.out.println();
+    
+    while (!userInput.equals("n")) {
         
+        
+        System.out.println("1. Print the tree in order");
+        System.out.println("2. Print the tree in post-order");
+        System.out.println("3. Add a word to the tree");
+        System.out.println("4. Remove a word from the tree");
+        System.out.println("5. Search for a word in the tree");
+        System.out.println("6. Quit");
+        System.out.print("Choose an option: ");
+        int option = scnr.nextInt();
 
-         userInput = scnr.nextLine();
-         
-    } while (!userInput.equalsIgnoreCase("n"));
+       if (option == 6) {
+        break;
+       }
+        switch (option) {
+            case 1:
+                System.out.println("--------------------------------------------------------------------");
+                tree.printInOrder(tree.getRoot());
+                System.out.println("--------------------------------------------------------------------");
+                break;
+            case 2:
+                System.out.println("--------------------------------------------------------------------");
+                tree.printPostOrder(tree.getRoot());
+                System.out.println("--------------------------------------------------------------------");
+                break;
+            case 3:
+                System.out.print("Enter a word to add: ");
+                String wordToAdd = scnr.next();
+                tree.insert(wordToAdd.toLowerCase().strip());
+                break;
+            case 4:
+                System.out.print("Enter a word to remove: ");
+                String wordToRemove = scnr.next();
+                tree.deletion(wordToRemove.toLowerCase().strip());
+                break;
+            case 5:
+                System.out.print("Enter a word to search for: ");
+                String wordToSearch = scnr.next();
+                
+                tree.search(wordToSearch);
+                
+                break;
+            case 6:
+                System.out.println("Quitting...");
+                break;
+            default:
+                System.out.println("Invalid option. Please try again.");
+                break;
+        }
+        
+    }
+        
     
     
-
+}
 }

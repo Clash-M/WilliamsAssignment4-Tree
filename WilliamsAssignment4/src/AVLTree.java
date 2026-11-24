@@ -10,7 +10,7 @@ public class AVLTree {
     public AVLTreeNode getRoot() {
         return root;
     }
-
+    //Helper method used to calculate balance factor and not cause a nullPointerException
     private int height(AVLTreeNode Node){
         if(Node == null){
             return -1;
@@ -18,7 +18,7 @@ public class AVLTree {
 
         return Node.getHeight();
     }
-
+    //Inserts node based on string given
     public void insert(String key){
         Stack<AVLTreeNode> visitedNodes = new Stack<>();
         AVLTreeNode currentNode = root;
@@ -33,7 +33,7 @@ public class AVLTree {
             root = new AVLTreeNode(key, 1);
             updateHeight(root);
             visitedNodes.push(root);
-            System.out.println("Inserted AT ROOT");
+            
             return;
         }
 
@@ -41,7 +41,7 @@ public class AVLTree {
 
 // loop to find where I should add
         while(currentNode != null && !inserted) {
-            System.out.println("Stack size = " + visitedNodes.size());
+            
             String nodeKey = currentNode.getData().keySet().iterator().next();
             visitedNodes.push(currentNode);
 // if I find key already there I update the value
@@ -59,7 +59,7 @@ public class AVLTree {
 
                     currentNode.setRightNode(NodeToAdd);
 
-                    System.out.println("Inserted RIGHT");
+                    
                     inserted = true;
 
                 }
@@ -75,7 +75,7 @@ public class AVLTree {
 
                     currentNode.setLeftNode(NodeToAdd);
 
-                    System.out.println("Inserted LEFT");
+                    
                     inserted = true;
 
                 }
@@ -85,30 +85,29 @@ public class AVLTree {
             }
 
         }
-            System.out.println("Starting rebalance");
+            //REBALANCE
 
             while (!(visitedNodes.isEmpty())) {
 
                 AVLTreeNode currentNodeVisited = visitedNodes.pop();
-                System.out.println(currentNodeVisited.getData());
+                
 
 
                 updateHeight(currentNodeVisited);
                 AVLTreeNode left = currentNodeVisited.getLeftNode();
                 AVLTreeNode right = currentNodeVisited.getRightNode();
 
-                System.out.println("Node: " + key);
-                System.out.println("Height: " + currentNodeVisited.getHeight());
+                
 
 
                 int bf = height(left) - height(right);
-                System.out.println("BF: " + bf);
+                
                 if (bf > 1) {
                     int leftBf = height(left.getLeftNode()) - height(left.getRightNode());
 
                     //LL case
                     if (leftBf >= 0) {
-                        System.out.println("LL");
+                        
                         AVLTreeNode newRoot = RRotation(currentNodeVisited);
                         if (visitedNodes.isEmpty()) {
                             root = newRoot;
@@ -124,7 +123,7 @@ public class AVLTree {
                     }
                     //LR case
                     else if (leftBf < 0) {
-                        System.out.println("LR");
+                        
                         currentNodeVisited.setLeftNode(LRotation(currentNodeVisited.getLeftNode()));
                         AVLTreeNode newRoot = RRotation(currentNodeVisited);
 
@@ -148,7 +147,7 @@ public class AVLTree {
                     int rightBf = height(right.getLeftNode()) - height(right.getRightNode());
                     //RR case
                     if (rightBf <= 0) {
-                        System.out.println("RR");
+                        
                         AVLTreeNode newRoot = LRotation(currentNodeVisited);
                         if (visitedNodes.isEmpty()) {
                             root = newRoot;
@@ -164,7 +163,7 @@ public class AVLTree {
                     }
                     //RL case
                     else if (rightBf > 0) {
-                        System.out.println("RL");
+                        
                         currentNodeVisited.setRightNode(RRotation(currentNodeVisited.getRightNode()));
                         AVLTreeNode newRoot = LRotation(currentNodeVisited);
 
@@ -187,7 +186,7 @@ public class AVLTree {
 
     }
 
-
+    //Searches from user inputed string
     public void search(String targetKey) {
         AVLTreeNode currentNode = root;
         String nodeKey = null;
@@ -196,7 +195,7 @@ public class AVLTree {
         nodeKey = currentNode.getData().keySet().iterator().next();
         
         if (targetKey.compareTo(nodeKey) == 0){
-            System.out.print("Found key: " + nodeKey + " with value: " + currentNode.getData().get(nodeKey));
+            System.out.println("Found key: " + nodeKey + " with value: " + currentNode.getData().get(nodeKey));
             return;
         }
 
@@ -219,7 +218,7 @@ public class AVLTree {
     }
     }
 
-
+    //Deletes node based on the string data it contains
     public void deletion(String target){
 
         Stack<AVLTreeNode> visitedNodes = new Stack<>();
@@ -228,18 +227,15 @@ public class AVLTree {
         AVLTreeNode parentNode = root;
         boolean deleted = false;
 
-
+//Search
         while (currentNode != null) {
             nodeKey = currentNode.getData().keySet().iterator().next();
             visitedNodes.push(currentNode);
             
-
-            
-
-            
         
             if (target.compareTo(nodeKey) == 0) {
                 
+                //Root deletion
 
                 if (root.getData().containsKey(target)) {
                     //root no kids
@@ -267,17 +263,23 @@ public class AVLTree {
 
                     AVLTreeNode successor = findMin(root.getRightNode());
 
-                    root.setData(successor.getData());
+                    
 
-                    if(successor.getRightNode() != null && successor.getLeftNode() == null){
+                    if(root.getRightNode() == successor){
+                        root.setData(successor.getData());
+                        root.setHeight(height(root));
                         root.setRightNode(successor.getRightNode());
                         deleted = true;
                         break;
                     }
 
                     else{
-                        AVLTreeNode parentOfsuc = findMinParent(root);
-                        parentOfsuc.setLeftNode(null);
+                        AVLTreeNode parentOfsuc = findMinParent(root.getRightNode());
+                        root.setData(successor.getData());
+                        
+                        parentOfsuc.setLeftNode(successor.getRightNode());
+                        updateHeight(parentOfsuc);
+                        
                         deleted = true;
                         break;
                     }
@@ -286,7 +288,7 @@ public class AVLTree {
                     
                 }
 
-                //If deleted node has no children
+                //If deleted node that is not the root has no children
                 if(currentNode.getLeftNode() == null && currentNode.getRightNode() == null){
                     //Child was left node
                     if (parentNode.getLeftNode() == currentNode) {
@@ -303,7 +305,7 @@ public class AVLTree {
                 }
 
                 //If deleted node has one child
-
+                //Right node
                 else if (currentNode.getLeftNode() != null && currentNode.getRightNode() == null) {
                     if(parentNode.getLeftNode() == currentNode){
                     parentNode.setLeftNode(currentNode.getLeftNode());
@@ -317,7 +319,7 @@ public class AVLTree {
                         break;
                     }
                 }
-
+                //Left node
                 else if(currentNode.getRightNode() != null && currentNode.getLeftNode() == null ){
                     if(parentNode.getRightNode() == currentNode){
                     parentNode.setRightNode(currentNode.getRightNode());
@@ -330,19 +332,24 @@ public class AVLTree {
                         break;
                     }
                 }
-
+                //Deletion of node with two kids
                 else{
                     AVLTreeNode successor = findMin(currentNode.getRightNode());
-                    AVLTreeNode successorParent = findMinParent(currentNode.getRightNode());
-                    currentNode.setData(successor.getData());
-                    if (successor.getRightNode() != null) {
-                        successorParent.setLeftNode(successor.getRightNode());
+                    
+                    
+                    if (successor == currentNode.getRightNode()) {
+                        currentNode.setData((successor.getData()));
+                        currentNode.setRightNode(successor.getRightNode());
+                        
                         deleted = true;
                         break;
                     }
 
                     else{
-                        successorParent.setLeftNode(null);
+                        AVLTreeNode successorParent = findMinParent(currentNode.getRightNode());
+                        currentNode.setData((successor.getData()));
+                        successorParent.setLeftNode(successor.getRightNode());
+                        updateHeight(successorParent);
                         deleted = true;
                         break;
                     }
@@ -355,14 +362,14 @@ public class AVLTree {
             else if (target.compareTo(nodeKey) > 0){
             parentNode = currentNode;
             currentNode = currentNode.getRightNode();
-            System.out.println("Going right");
+            
             
         }
 
             else if (target.compareTo(nodeKey) < 0){
             parentNode = currentNode;
             currentNode = currentNode.getLeftNode();
-            System.out.println("Going left");
+            
             
         }
 
@@ -374,28 +381,31 @@ public class AVLTree {
 
     }
 
+    
+
     while (!(visitedNodes.isEmpty())) {
 
                 AVLTreeNode currentNodeVisited = visitedNodes.pop();
-                System.out.println(currentNodeVisited.getData());
+                
 
 
                 updateHeight(currentNodeVisited);
                 AVLTreeNode left = currentNodeVisited.getLeftNode();
                 AVLTreeNode right = currentNodeVisited.getRightNode();
 
-                System.out.println("Node: " + target);
-                System.out.println("Height: " + currentNodeVisited.getHeight());
+                
 
 
                 int bf = height(left) - height(right);
-                System.out.println("BF: " + bf);
+                
                 if (bf > 1) {
                     int leftBf = height(left.getLeftNode()) - height(left.getRightNode());
 
                     //LL case
                     if (leftBf >= 0) {
-                        System.out.println("LL");
+
+                        
+                        
                         AVLTreeNode newRoot = RRotation(currentNodeVisited);
                         if (visitedNodes.isEmpty()) {
                             root = newRoot;
@@ -411,13 +421,14 @@ public class AVLTree {
                     }
                     //LR case
                     else if (leftBf < 0) {
-                        System.out.println("LR");
+                        
                         currentNodeVisited.setLeftNode(LRotation(currentNodeVisited.getLeftNode()));
                         AVLTreeNode newRoot = RRotation(currentNodeVisited);
 
                         if (visitedNodes.isEmpty()) {
                             root = newRoot;
-                        } else {
+                        } 
+                        else {
                             AVLTreeNode parent = visitedNodes.peek();
 
                             if (parent.getLeftNode() == currentNodeVisited) {
@@ -435,11 +446,12 @@ public class AVLTree {
                     int rightBf = height(right.getLeftNode()) - height(right.getRightNode());
                     //RR case
                     if (rightBf <= 0) {
-                        System.out.println("RR");
+                        
                         AVLTreeNode newRoot = LRotation(currentNodeVisited);
                         if (visitedNodes.isEmpty()) {
                             root = newRoot;
-                        } else {
+                        } 
+                        else {
                             AVLTreeNode parent = visitedNodes.peek();
 
                             if (parent.getLeftNode() == currentNodeVisited) {
@@ -448,10 +460,13 @@ public class AVLTree {
                                 parent.setRightNode(newRoot);
                             }
                         }
+                       
+
+
                     }
                     //RL case
                     else if (rightBf > 0) {
-                        System.out.println("RL");
+                        
                         currentNodeVisited.setRightNode(RRotation(currentNodeVisited.getRightNode()));
                         AVLTreeNode newRoot = LRotation(currentNodeVisited);
 
@@ -474,7 +489,7 @@ public class AVLTree {
     
 }
     
-
+    //Rotates Right
     public AVLTreeNode RRotation(AVLTreeNode node){
 
         if(node == null || node.getLeftNode() == null) {
@@ -493,7 +508,7 @@ public class AVLTree {
         return leftChild;
 
     }
-
+    //Rotates Left 
     public AVLTreeNode LRotation(AVLTreeNode node){
 
         if(node == null || node.getRightNode() == null) {
@@ -512,11 +527,12 @@ public class AVLTree {
         return rightChild;
 
     }
-
+    //Updates height for balancing 
     public void updateHeight(AVLTreeNode node){
         node.setHeight(Math.max(height(node.getLeftNode()), height(node.getRightNode())) + 1);
     }
 
+    //finds successor for deletion
 
     public AVLTreeNode findMin(AVLTreeNode node){
         AVLTreeNode currentNode = node;
@@ -528,15 +544,23 @@ public class AVLTree {
         return currentNode;
     }
 
+    //Finds the successors parent for deletion
+
     public AVLTreeNode findMinParent(AVLTreeNode node){
         AVLTreeNode currentNode = node;
         
+        if (currentNode == null || currentNode.getLeftNode() == null) {
+        return null;
+        }
+
         while(currentNode.getLeftNode().getLeftNode() != null) {
             currentNode = currentNode.getLeftNode();
         }
 
         return currentNode;
     }
+
+    //In-Order print
 
     public void printInOrder(AVLTreeNode node){
         if (node == null){
@@ -552,6 +576,8 @@ public class AVLTree {
         printInOrder(node.getRightNode());
     }
 
+    //Post-order print
+
     public void printPostOrder(AVLTreeNode node){
         Stack<AVLTreeNode> stackONodes = new Stack<>();
 
@@ -560,7 +586,7 @@ public class AVLTree {
         }
 
         stackONodes.push(node);
-        
+
         printPostOrder(node.getLeftNode());
         printPostOrder(node.getRightNode());
 
